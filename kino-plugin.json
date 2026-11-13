@@ -12,7 +12,15 @@
     "s2.vimeos.net",
     "voe.sx",
     "api.themoviedb.org",
-    "image.tmdb.org"
+    "image.tmdb.org",
+    "*.vimeos.net",
+    "*.vimeos.zip",
+    "vimeos.zip",
+    "p2.vimeos.zip",
+    "p3.vimeos.zip",
+    "p4.vimeos.zip",
+    "p5.vimeos.zip",
+    "p6.vimeos.zip"
   ],
   "capabilities": [
     "search",
@@ -30,7 +38,7 @@
       "key": "openScreenNotice",
       "label": "AllCalidad Pantalla",
       "type": "section",
-      "hint": "AllCalidad incluye una pantalla visual nativa completa accesible desde el menú principal de Kino.",
+      "hint": "AllCalidad incluye una pantalla visual nativa completa accesible desde el men\u00fa principal de Kino.",
       "labelEn": "AllCalidad Screen",
       "hintEn": "AllCalidad features a complete visual native screen accessible from Kino's main menu."
     }
@@ -61,5 +69,6 @@
         "screen"
       ]
     }
-  }
+  },
+  "streamHosts": "any"
 }
