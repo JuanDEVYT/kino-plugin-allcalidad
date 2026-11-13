@@ -1,0 +1,6 @@
+.kino-*.json
+tmp_state.json
+*.tmp
+.DS_Store
+node_modules/
+sdk/

@@ -1,0 +1,65 @@
+{
+  "id": "allcalidad",
+  "name": "AllCalidad",
+  "version": "1.0.0",
+  "apiVersion": 8,
+  "entry": "plugin.js",
+  "icon": "icon.png",
+  "hosts": [
+    "allcalidad.re",
+    "vimeos.net",
+    "s1.vimeos.net",
+    "s2.vimeos.net",
+    "voe.sx",
+    "api.themoviedb.org",
+    "image.tmdb.org"
+  ],
+  "capabilities": [
+    "search",
+    "home",
+    "browse",
+    "episodes",
+    "resolve"
+  ],
+  "theme": {
+    "accent": "#1863d1",
+    "background": "#090f1e"
+  },
+  "settings": [
+    {
+      "key": "openScreenNotice",
+      "label": "AllCalidad Pantalla",
+      "type": "section",
+      "hint": "AllCalidad incluye una pantalla visual nativa completa accesible desde el menú principal de Kino.",
+      "labelEn": "AllCalidad Screen",
+      "hintEn": "AllCalidad features a complete visual native screen accessible from Kino's main menu."
+    }
+  ],
+  "enhancements": {
+    "14": {
+      "capabilities": [
+        "screen"
+      ],
+      "screen": {
+        "label": "AllCalidad",
+        "labelEn": "AllCalidad",
+        "icon": "movie",
+        "menuOpens": "screen",
+        "opensFrom": [
+          "menu",
+          "settings"
+        ],
+        "settingsButton": {
+          "label": "Abrir AllCalidad",
+          "labelEn": "Open AllCalidad"
+        },
+        "settingsIn": "screen"
+      }
+    },
+    "19": {
+      "capabilities": [
+        "screen"
+      ]
+    }
+  }
+}
