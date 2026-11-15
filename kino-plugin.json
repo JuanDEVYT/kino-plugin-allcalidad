@@ -5,14 +5,12 @@
   "apiVersion": 8,
   "entry": "plugin.js",
   "icon": "icon.png",
-  "browser": "pages",
   "hosts": [
     "allcalidad.re",
     "vimeos.net",
     "s1.vimeos.net",
     "s2.vimeos.net",
     "voe.sx",
-    "*.voe.sx",
     "api.themoviedb.org",
     "image.tmdb.org",
     "*.vimeos.net",
@@ -23,7 +21,12 @@
     "p4.vimeos.zip",
     "p5.vimeos.zip",
     "p6.vimeos.zip",
-    "p7.vimeos.zip"
+    "*.allcalidad.re",
+    "*.voe.sx",
+    "voe-network.net",
+    "*.voe-network.net",
+    "voeun-block.com",
+    "*.voeun-block.com"
   ],
   "capabilities": [
     "search",
@@ -73,5 +76,6 @@
       ]
     }
   },
-  "streamHosts": "any"
+  "streamHosts": "any",
+  "browser": "pages"
 }

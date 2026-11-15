@@ -5,13 +5,15 @@
 const BASE_URL = "https://allcalidad.re";
 const API_URL = "https://allcalidad.re/api/rest";
 const IMG_BASE = "https://allcalidad.re/wp-content/uploads";
+const BROWSER_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 const LOGO_DATA = "data:image/png;base64,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";
 
 // Cliente HTTP seguro con fallback a kino.fetch
 async function httpGet(url, headers = {}) {
   const h = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "User-Agent": BROWSER_UA,
+    "Referer": BASE_URL + "/",
     "Accept": "application/json, text/html, */*",
     ...headers
   };
@@ -40,6 +42,51 @@ function unpack(p, a, c, k) {
     dict[e(i)] = k[i] || e(i);
   }
   return p.replace(/\b\w+\b/g, (x) => (dict[x] !== undefined ? dict[x] : x));
+}
+
+// Extractor de fuentes HLS / MP4 desde el HTML renderizado de VOE
+function extractHlsFromVoe(html) {
+  if (!html || typeof html !== "string") return null;
+
+  // 1. "hls": "https://..." o 'hls': 'https://...'
+  let m = html.match(/["']?hls["']?\s*:\s*["'](https?:\/\/[^"']+\.m3u8[^"']*)["']/i);
+  if (m) return m[1];
+
+  // 2. sources = { "hls": "https://..." }
+  m = html.match(/sources\s*=\s*\{[^}]*["']hls["']\s*:\s*["'](https?:\/\/[^"']+)["']/i);
+  if (m) return m[1];
+
+  // 3. "file": "https://..." (.m3u8 o .mp4)
+  m = html.match(/["']file["']\s*:\s*["'](https?:\/\/[^"']+(?:\.m3u8|\.mp4)[^"']*)["']/i);
+  if (m) return m[1];
+
+  // 4. "mp4": "https://..."
+  m = html.match(/["']?mp4["']?\s*:\s*["'](https?:\/\/[^"']+\.mp4[^"']*)["']/i);
+  if (m) return m[1];
+
+  // 5. Cadenas atob() base64
+  const b64Matches = html.matchAll(/atob\(["']([A-Za-z0-9+/=]+)["']\)/g);
+  for (const match of b64Matches) {
+    try {
+      const code = match[1];
+      const dec = (typeof atob === "function") ? atob(code) : "";
+      if (dec && (dec.includes(".m3u8") || dec.includes(".mp4"))) {
+        const streamM = dec.match(/(https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)[^\s"'<>]*)/i);
+        if (streamM) return streamM[1];
+        if (dec.startsWith("http")) return dec;
+      }
+    } catch (_) {}
+  }
+
+  // 6. URL directa de m3u8
+  m = html.match(/(https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*)/i);
+  if (m) return m[1];
+
+  // 7. URL directa de mp4
+  m = html.match(/(https?:\/\/[^\s"'<>]+\.mp4[^\s"'<>]*)/i);
+  if (m) return m[1];
+
+  return null;
 }
 
 function parseYear(title, releaseDate) {
@@ -227,44 +274,6 @@ export async function episodes(ref) {
   };
 }
 
-// Helper para extraer lista completa de embeds
-function extractEmbedsFromData(data) {
-  if (!data || typeof data !== "object") return [];
-  const list = Array.isArray(data.embeds) ? [...data.embeds] : [];
-  for (const [k, v] of Object.entries(data)) {
-    if (k !== "embeds" && k !== "downloads" && v && typeof v === "object" && v.url) {
-      if (!list.some((e) => e.url === v.url)) {
-        list.push(v);
-      }
-    }
-  }
-  return list.filter((e) => e.url && !e.url.includes("la.movie") && !e.url.includes("demo"));
-}
-
-function extractVimeosStream(html) {
-  const marker = "eval(function(p,a,c,k,e,d)";
-  const start = html.indexOf(marker);
-  if (start === -1) {
-    const direct = html.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/);
-    return direct ? direct[0] : null;
-  }
-  const end = html.indexOf("</script>", start);
-  if (end === -1) return null;
-  const scriptContent = html.slice(start, end).trim();
-  const trimmed = scriptContent.replace(/;\s*$/, "");
-  const unpackExpr = "(" + trimmed.slice(5);
-  try {
-    const unpacked = (new Function("return " + unpackExpr))();
-    if (typeof unpacked === "string") {
-      const match =
-        unpacked.match(/file\s*:\s*["'](https?:\/\/[^"']+\.m3u8[^"']*)/i) ||
-        unpacked.match(/https?:\/\/[^\s"'<>\\]+\.m3u8[^\s"'<>\\]*/i);
-      return match ? match[1] || match[0] : null;
-    }
-  } catch (_) {}
-  return null;
-}
-
 // ----------------------------------------------------
 // Capacidad: resolve
 // ----------------------------------------------------
@@ -272,88 +281,164 @@ export async function resolve(ref) {
   let postId = "";
   try {
     const parsed = JSON.parse(ref);
-    postId = parsed.id || parsed.postId || parsed._id || "";
+    postId = String(parsed.id || "");
   } catch (_) {
-    postId = ref;
+    postId = String(ref || "");
   }
 
   if (!postId) {
-    throw new Error("ID de título no válido para resolución");
+    throw new Error("Identificador de contenido no válido");
   }
 
-  const playerUrl = `${API_URL}/player?post_id=${postId}&_any=1`;
-  const res = await httpJson(playerUrl);
-  const embeds = extractEmbedsFromData(res?.data);
+  // 1. Obtener reproductores desde /player
+  let playerUrl = `${API_URL}/player?post_id=${postId}&_any=1`;
+  let res = await httpJson(playerUrl);
+  let embeds = Array.isArray(res?.data?.embeds) ? res.data.embeds : [];
+
+  // 2. Si no hay embeds y el ID corresponde a una serie, consultar episodios y usar el primero
+  if (embeds.length === 0) {
+    try {
+      const epRes = await httpJson(`${API_URL}/episodes?post_id=${postId}`);
+      const eps = epRes?.data || [];
+      if (Array.isArray(eps) && eps.length > 0) {
+        const firstEp = eps[0];
+        const firstEpId = firstEp._id || firstEp.id;
+        if (firstEpId) {
+          playerUrl = `${API_URL}/player?post_id=${firstEpId}&_any=1`;
+          res = await httpJson(playerUrl);
+          embeds = Array.isArray(res?.data?.embeds) ? res.data.embeds : [];
+        }
+      }
+    } catch (_) {}
+  }
 
   if (embeds.length === 0) {
-    throw new Error("No se encontraron fuentes de reproducción disponibles para este título");
+    throw new Error("No se encontraron servidores de reproducción disponibles para este título en AllCalidad");
   }
+
+  // Ordenar embeds priorizando vimeos.net (desempaquetado HTTP rápido) sobre voe.sx
+  const sortedEmbeds = [...embeds].sort((a, b) => {
+    const aVim = a.url && a.url.includes("vimeos.net") ? 1 : 0;
+    const bVim = b.url && b.url.includes("vimeos.net") ? 1 : 0;
+    return bVim - aVim;
+  });
 
   const resolvedStreams = [];
 
-  for (const embed of embeds) {
+  for (const embed of sortedEmbeds) {
     const u = embed.url;
     if (!u) continue;
 
-    // Servidor Vimeos
-    if (u.includes("vimeos.net") || u.includes("vimeos.zip")) {
+    // A. Servidor Vimeos (desempaquetado p.a.c.k.e.r)
+    if (u.includes("vimeos.net")) {
       try {
-        const html = await httpGet(u, { "Referer": `${BASE_URL}/` });
-        const streamUrl = extractVimeosStream(html);
-        if (streamUrl) {
-          const label = `Vimeos [${embed.quality || "HD"}]${embed.lang ? ` (${embed.lang})` : ""}`;
-          resolvedStreams.push({
-            url: streamUrl,
-            mime: "application/vnd.apple.mpegurl",
-            headers: {
-              "Referer": "https://vimeos.net/",
-              "Origin": "https://vimeos.net",
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-            },
-            label
-          });
+        const html = await httpGet(u, { "Referer": BASE_URL });
+        const m = html.match(/eval\(function\(p,a,c,k,e,d\)[\s\S]*?\('((?:[^'\\]|\\.)*)',(\d+),(\d+),'((?:[^'\\]|\\.)*)'\.split\('\|'\)/);
+        if (m) {
+          const cleanP = m[1].replace(/\\'/g, "'");
+          const unpacked = unpack(cleanP, parseInt(m[2], 10), parseInt(m[3], 10), m[4].split("|"));
+          const m3u8Match = unpacked.match(/file\s*:\s*["'](https?:\/\/[^"']+\.m3u8[^"']*)/);
+          if (m3u8Match) {
+            resolvedStreams.push({
+              url: m3u8Match[1],
+              mime: "application/vnd.apple.mpegurl",
+              headers: {
+                "Referer": "https://vimeos.net/",
+                "User-Agent": BROWSER_UA
+              },
+              label: embed.lang ? `Vimeos (${embed.quality || "HD"} - ${embed.lang})` : (embed.quality || "Vimeos HD")
+            });
+            break;
+          }
         }
       } catch (_) {}
     }
 
-    // Servidor VOE (requiere browser.page para DDoS-Guard)
-    else if (u.includes("voe.sx") || u.includes("/e/")) {
+    // B. Servidor VOE (voe.sx)
+    if (u.includes("voe.sx")) {
+      let voeStream = null;
+
+      // Intentar primero con kino.browser.page
       if (typeof kino !== "undefined" && kino.browser && typeof kino.browser.page === "function") {
         try {
-          const page = await kino.browser.page(u, { waitFor: "sources", timeout: 20000 });
-          if (page && page.content) {
-            const m = page.content.match(/https?:\/\/[^\s"'<>\\]+\.m3u8[^\s"'<>\\]*/);
-            if (m) {
-              const label = `VOE [${embed.quality || "1080p"}]${embed.lang ? ` (${embed.lang})` : ""}`;
-              resolvedStreams.push({
-                url: m[0],
-                mime: "application/vnd.apple.mpegurl",
-                headers: {
-                  "Referer": "https://voe.sx/",
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-                },
-                label
-              });
+          const pageResult = await kino.browser.page(u, {
+            timeoutMs: 25000,
+            waitFor: "sources",
+            headers: {
+              "User-Agent": BROWSER_UA,
+              "Referer": BASE_URL
+            }
+          });
+          if (pageResult && pageResult.html) {
+            voeStream = extractHlsFromVoe(pageResult.html);
+          }
+        } catch (_) {}
+      }
+
+      // Fallback con kino.browser.capture si page no extrajo el stream
+      if (!voeStream && typeof kino !== "undefined" && kino.browser && typeof kino.browser.capture === "function") {
+        try {
+          const cap = await kino.browser.capture(u, {
+            timeoutMs: 20000,
+            headers: {
+              "User-Agent": BROWSER_UA,
+              "Referer": BASE_URL
+            }
+          });
+          if (cap && Array.isArray(cap.media) && cap.media.length > 0) {
+            const best = cap.media.find(m => m.url && (m.url.includes(".m3u8") || m.url.includes(".mp4"))) || cap.media[0];
+            if (best && best.url) {
+              voeStream = best.url;
             }
           }
         } catch (_) {}
       }
+
+      if (voeStream) {
+        resolvedStreams.push({
+          url: voeStream,
+          mime: voeStream.includes(".m3u8") ? "application/vnd.apple.mpegurl" : "video/mp4",
+          headers: {
+            "Referer": u,
+            "User-Agent": BROWSER_UA
+          },
+          label: embed.lang ? `VOE (${embed.quality || "HD"} - ${embed.lang})` : (embed.quality || "VOE HD")
+        });
+        break;
+      }
+    }
+
+    // C. Stream directo (.m3u8 o .mp4)
+    if (u.includes(".m3u8") || u.includes(".mp4")) {
+      resolvedStreams.push({
+        url: u,
+        mime: u.includes(".m3u8") ? "application/vnd.apple.mpegurl" : "video/mp4",
+        headers: {
+          "Referer": BASE_URL,
+          "User-Agent": BROWSER_UA
+        },
+        label: embed.lang ? `${embed.quality || "HD"} - ${embed.lang}` : "Stream directo"
+      });
+      break;
     }
   }
 
-  if (resolvedStreams.length > 0) {
-    const primary = resolvedStreams[0];
-    const alts = resolvedStreams.slice(1);
-    return {
-      url: primary.url,
-      mime: primary.mime,
-      headers: primary.headers,
-      label: primary.label,
-      ...(alts.length > 0 ? { alternatives: alts } : {})
-    };
+  if (resolvedStreams.length === 0) {
+    throw new Error("No se pudo extraer un flujo de video reproducible para este título");
   }
 
-  throw new Error("No se pudo extraer ningún stream de video reproducible (m3u8/mp4). Los servidores pueden estar caídos.");
+  const primary = resolvedStreams[0];
+  const alternatives = resolvedStreams.slice(1).map(s => ({
+    url: s.url,
+    label: s.label
+  }));
+
+  return {
+    url: primary.url,
+    mime: primary.mime,
+    headers: primary.headers,
+    ...(alternatives.length > 0 ? { alternatives } : {})
+  };
 }
 
 // ----------------------------------------------------
