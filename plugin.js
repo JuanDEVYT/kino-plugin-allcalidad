@@ -227,6 +227,44 @@ export async function episodes(ref) {
   };
 }
 
+// Helper para extraer lista completa de embeds
+function extractEmbedsFromData(data) {
+  if (!data || typeof data !== "object") return [];
+  const list = Array.isArray(data.embeds) ? [...data.embeds] : [];
+  for (const [k, v] of Object.entries(data)) {
+    if (k !== "embeds" && k !== "downloads" && v && typeof v === "object" && v.url) {
+      if (!list.some((e) => e.url === v.url)) {
+        list.push(v);
+      }
+    }
+  }
+  return list.filter((e) => e.url && !e.url.includes("la.movie") && !e.url.includes("demo"));
+}
+
+function extractVimeosStream(html) {
+  const marker = "eval(function(p,a,c,k,e,d)";
+  const start = html.indexOf(marker);
+  if (start === -1) {
+    const direct = html.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/);
+    return direct ? direct[0] : null;
+  }
+  const end = html.indexOf("</script>", start);
+  if (end === -1) return null;
+  const scriptContent = html.slice(start, end).trim();
+  const trimmed = scriptContent.replace(/;\s*$/, "");
+  const unpackExpr = "(" + trimmed.slice(5);
+  try {
+    const unpacked = (new Function("return " + unpackExpr))();
+    if (typeof unpacked === "string") {
+      const match =
+        unpacked.match(/file\s*:\s*["'](https?:\/\/[^"']+\.m3u8[^"']*)/i) ||
+        unpacked.match(/https?:\/\/[^\s"'<>\\]+\.m3u8[^\s"'<>\\]*/i);
+      return match ? match[1] || match[0] : null;
+    }
+  } catch (_) {}
+  return null;
+}
+
 // ----------------------------------------------------
 // Capacidad: resolve
 // ----------------------------------------------------
@@ -234,69 +272,88 @@ export async function resolve(ref) {
   let postId = "";
   try {
     const parsed = JSON.parse(ref);
-    postId = parsed.id;
+    postId = parsed.id || parsed.postId || parsed._id || "";
   } catch (_) {
     postId = ref;
   }
 
+  if (!postId) {
+    throw new Error("ID de título no válido para resolución");
+  }
+
   const playerUrl = `${API_URL}/player?post_id=${postId}&_any=1`;
   const res = await httpJson(playerUrl);
-  const embeds = res?.data?.embeds || [];
-  const alternatives = [];
+  const embeds = extractEmbedsFromData(res?.data);
 
-  // Buscar stream m3u8 en servidores conocidos (vimeos.net)
+  if (embeds.length === 0) {
+    throw new Error("No se encontraron fuentes de reproducción disponibles para este título");
+  }
+
+  const resolvedStreams = [];
+
   for (const embed of embeds) {
     const u = embed.url;
     if (!u) continue;
 
-    if (u.includes("vimeos.net")) {
+    // Servidor Vimeos
+    if (u.includes("vimeos.net") || u.includes("vimeos.zip")) {
       try {
-        const html = await httpGet(u, { "Referer": BASE_URL });
-        const m = html.match(/eval\(function\(p,a,c,k,e,d\)[\s\S]*?\('((?:[^'\\]|\\.)*)',(\d+),(\d+),'((?:[^'\\]|\\.)*)'\.split\('\|'\)/);
-        if (m) {
-          const cleanP = m[1].replace(/\\'/g, "'");
-          const unpacked = unpack(cleanP, parseInt(m[2], 10), parseInt(m[3], 10), m[4].split("|"));
-          const m3u8Match = unpacked.match(/file\s*:\s*["'](https?:\/\/[^"']+\.m3u8[^"']*)/);
-          if (m3u8Match) {
-            const streamUrl = m3u8Match[1];
-            // Si hay otros embeds, registrarlos como alternativas
-            for (const alt of embeds) {
-              if (alt.url && alt.url !== u) {
-                alternatives.push({
-                  url: alt.url,
-                  label: alt.lang ? `${alt.quality || "HD"} - ${alt.lang}` : (alt.quality || "Stream alternativo")
-                });
-              }
-            }
-            return {
-              url: streamUrl,
-              mime: "application/vnd.apple.mpegurl",
-              headers: {
-                "Referer": "https://vimeos.net/",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-              },
-              ...(alternatives.length > 0 ? { alternatives } : {})
-            };
-          }
+        const html = await httpGet(u, { "Referer": `${BASE_URL}/` });
+        const streamUrl = extractVimeosStream(html);
+        if (streamUrl) {
+          const label = `Vimeos [${embed.quality || "HD"}]${embed.lang ? ` (${embed.lang})` : ""}`;
+          resolvedStreams.push({
+            url: streamUrl,
+            mime: "application/vnd.apple.mpegurl",
+            headers: {
+              "Referer": "https://vimeos.net/",
+              "Origin": "https://vimeos.net",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            },
+            label
+          });
         }
       } catch (_) {}
-    } else {
-      alternatives.push({
-        url: u,
-        label: embed.lang ? `${embed.quality || "HD"} - ${embed.lang}` : (embed.quality || "Embed")
-      });
+    }
+
+    // Servidor VOE (requiere browser.page para DDoS-Guard)
+    else if (u.includes("voe.sx") || u.includes("/e/")) {
+      if (typeof kino !== "undefined" && kino.browser && typeof kino.browser.page === "function") {
+        try {
+          const page = await kino.browser.page(u, { waitFor: "sources", timeout: 20000 });
+          if (page && page.content) {
+            const m = page.content.match(/https?:\/\/[^\s"'<>\\]+\.m3u8[^\s"'<>\\]*/);
+            if (m) {
+              const label = `VOE [${embed.quality || "1080p"}]${embed.lang ? ` (${embed.lang})` : ""}`;
+              resolvedStreams.push({
+                url: m[0],
+                mime: "application/vnd.apple.mpegurl",
+                headers: {
+                  "Referer": "https://voe.sx/",
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+                },
+                label
+              });
+            }
+          }
+        } catch (_) {}
+      }
     }
   }
 
-  // Si no se pudo desempaquetar m3u8 directo, retornar la mejor alternativa disponible
-  if (alternatives.length > 0) {
+  if (resolvedStreams.length > 0) {
+    const primary = resolvedStreams[0];
+    const alts = resolvedStreams.slice(1);
     return {
-      url: alternatives[0].url,
-      alternatives: alternatives.slice(1)
+      url: primary.url,
+      mime: primary.mime,
+      headers: primary.headers,
+      label: primary.label,
+      ...(alts.length > 0 ? { alternatives: alts } : {})
     };
   }
 
-  throw new Error("No se encontraron fuentes de reproducción disponibles para este título");
+  throw new Error("No se pudo extraer ningún stream de video reproducible (m3u8/mp4). Los servidores pueden estar caídos.");
 }
 
 // ----------------------------------------------------
